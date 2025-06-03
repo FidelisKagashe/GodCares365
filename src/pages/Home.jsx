@@ -1,6 +1,7 @@
 // src/pages/Home.jsx
 import logo from '../assets/logo_transparent.png';
 import women from '../assets/cropped_maasai_women.jpg';
+import ImageBible from '../assets/ChatGPT Image Jun 3, 2025, 06_06_23 PM.png'
 import { Link } from 'react-router-dom';
 import { HiInformationCircle, HiNewspaper, HiBookOpen, HiPhotograph, HiShoppingCart, HiCalendar } from 'react-icons/hi';
 
@@ -42,11 +43,11 @@ export default function Home() {
       {/* Dhamira Yetu (Our Mission) with background image */}
       <section className="flex flex-col-reverse md:flex-row items-center bg-gray-50 py-6">
         {/* Image on left (desktop), below text on mobile */}
-        <div className="w-full md:w-1/2">
+        <div className="w-full p-4 md:w-1/2">
           <img
-            src="/images/mission-image.jpg"
+            src={ImageBible}
             alt="Open Bible with sunlight"
-            className="w-full h-auto rounded-lg shadow-lg"
+            className="w-full md:h-96 rounded-lg shadow-lg"
           />
         </div>
 
