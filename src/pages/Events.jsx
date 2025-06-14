@@ -13,7 +13,7 @@ export default function MatukioMaalumu() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await fetch("http://127.0.0.1:8000/events/");
+        const res = await fetch("https://godcares365.pythonanywhere.com/events/");
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setEvents(data);

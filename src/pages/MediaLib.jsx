@@ -16,7 +16,7 @@ export default function MediaLib() {
     const fetchMedia = async () => {
       try {
         // Fetch API root
-        const rootRes = await fetch("http://127.0.0.1:8000/");
+        const rootRes = await fetch("https://godcares365.pythonanywhere.com/");
         const root = await rootRes.json();
 
         // Fetch each media type
