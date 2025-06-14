@@ -1,5 +1,3 @@
-// src/pages/MediaLib.jsx
-import Img1 from "../assets/WhatsApp Image 2025-05-29 at 17.24.56_370e9e3b.jpg"
 import { useState, useEffect } from "react";
 import {
   HiDocumentText,
@@ -10,51 +8,76 @@ import {
 } from "react-icons/hi";
 
 export default function MediaLib() {
-  // State for all media items
   const [mediaItems, setMediaItems] = useState([]);
-  // State for which tab is active: "video", "audio", "pdf"
   const [activeTab, setActiveTab] = useState("video");
-  // State for which video is open in modal (YouTube embed URL)
   const [openVideoUrl, setOpenVideoUrl] = useState("");
 
   useEffect(() => {
-    // Example data: YouTube URLs (embed), local audio, local PDF
-    const initialData = [
-      {
-        id: 1,
-        title: "Mafunzo Ya Biblia (YouTube)",
-        url: "https://www.youtube.com/embed/ctw_Vc9xZJk",
-        type: "video",
-      },
-      {
-        id: 2,
-        title: "Video Ya Mahubiri (YouTube)",
-        url: "https://www.youtube.com/embed/3kTz1qs1zM8",
-        type: "video",
-      },
-      {
-        id: 3,
-        title: "Tukio Maalum 2025 (Audio)",
-        url: "/audio/media3.mp3",
-        type: "audio",
-      },
-      {
-        id: 4,
-        title: "Maonyesho ya Imani (Picha)",
-        url: "/images/media1.jpg",
-        type: "image",
-      },
-      {
-        id: 5,
-        title: "Vifungu Maalum (PDF)",
-        url: "/docs/media5.pdf",
-        type: "pdf",
-      },
-    ];
-    setMediaItems(initialData);
+    const fetchMedia = async () => {
+      try {
+        // Fetch API root
+        const rootRes = await fetch("http://127.0.0.1:8000/");
+        const root = await rootRes.json();
+
+        // Fetch each media type
+        const [videosRes, audiosRes, docsRes, photosRes] = await Promise.all([
+          fetch(root.videos),
+          fetch(root.audios),
+          fetch(root.documents),
+          fetch(root.photos),
+        ]);
+
+        const [videos, audios, documents, photos] = await Promise.all([
+          videosRes.json(),
+          audiosRes.json(),
+          docsRes.json(),
+          photosRes.json(),
+        ]);
+
+        // Map to unified format
+        const mappedVideos = videos.map((v) => ({
+          id: v.id,
+          title: v.title,
+          url: v.embed_url.includes("watch?v=")
+            ? v.embed_url.replace("watch?v=", "embed/")
+            : v.embed_url,
+          type: "video",
+        }));
+
+        const mappedAudios = audios.map((a) => ({
+          id: a.id,
+          title: a.title,
+          url: a.file,
+          type: "audio",
+        }));
+
+        const mappedDocs = documents.map((d) => ({
+          id: d.id,
+          title: d.title,
+          url: d.file,
+          type: "pdf",
+        }));
+
+        const mappedPhotos = photos.map((p) => ({
+          id: p.id,
+          title: p.title,
+          url: p.image,
+          type: "image",
+        }));
+
+        setMediaItems([
+          ...mappedVideos,
+          ...mappedAudios,
+          ...mappedDocs,
+          ...mappedPhotos,
+        ]);
+      } catch (error) {
+        console.error("Error fetching media items:", error);
+      }
+    };
+    fetchMedia();
   }, []);
 
-  // Filter by type
   const videos = mediaItems.filter((item) => item.type === "video");
   const audios = mediaItems.filter((item) => item.type === "audio");
   const documents = mediaItems.filter((item) => item.type === "pdf");
@@ -63,7 +86,6 @@ export default function MediaLib() {
   return (
     <main className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-6 space-y-8">
-        {/* Header */}
         <header className="text-center">
           <h1 className="text-4xl font-bold text-gray-800">
             Maktaba Ya Media
@@ -73,7 +95,6 @@ export default function MediaLib() {
           </p>
         </header>
 
-        {/* Tab Navigation */}
         <nav className="flex justify-center space-x-4 border-b pb-2">
           <button
             onClick={() => setActiveTab("video")}
@@ -121,11 +142,9 @@ export default function MediaLib() {
           </button>
         </nav>
 
-        {/* Content Section */}
         <section>
-          {/* --- VIDEO TAB --- */}
           {activeTab === "video" && (
-            <>
+            <> 
               {videos.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   {videos.map((item) => (
@@ -137,11 +156,8 @@ export default function MediaLib() {
                         className="relative w-full h-48 bg-black cursor-pointer"
                         onClick={() => setOpenVideoUrl(item.url)}
                       >
-                        {/* Thumbnail Overlay */}
                         <img
-                          src={`https://img.youtube.com/vi/${
-                            item.url.split("/").pop()
-                          }/hqdefault.jpg`}
+                          src={`https://img.youtube.com/vi/${item.url.split("/").pop()}/hqdefault.jpg`}
                           alt={`${item.title} thumbnail`}
                           className="object-cover w-full h-full brightness-75"
                         />
@@ -168,9 +184,8 @@ export default function MediaLib() {
             </>
           )}
 
-          {/* --- AUDIO TAB --- */}
           {activeTab === "audio" && (
-            <>
+            <> 
               {audios.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   {audios.map((item) => (
@@ -178,10 +193,7 @@ export default function MediaLib() {
                       key={item.id}
                       className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden flex flex-col items-center p-6"
                     >
-                      <HiMusicNote
-                        size={48}
-                        className="text-green-600 mb-4"
-                      />
+                      <HiMusicNote size={48} className="text-green-600 mb-4" />
                       <h3 className="text-lg font-semibold text-gray-800 mb-2 text-center truncate">
                         {item.title}
                       </h3>
@@ -195,9 +207,8 @@ export default function MediaLib() {
             </>
           )}
 
-          {/* --- PDF TAB --- */}
           {activeTab === "pdf" && (
-            <>
+            <> 
               {documents.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   {documents.map((item) => (
@@ -206,15 +217,11 @@ export default function MediaLib() {
                       className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden flex flex-col p-4"
                     >
                       <div className="flex items-center space-x-2 mb-3">
-                        <HiDocumentText
-                          size={36}
-                          className="text-red-600"
-                        />
+                        <HiDocumentText size={36} className="text-red-600" />
                         <h3 className="text-lg font-semibold text-gray-800 truncate">
                           {item.title}
                         </h3>
                       </div>
-                      {/* Embedded PDF preview */}
                       <iframe
                         src={item.url}
                         className="w-full h-48 border rounded-lg mb-4"
@@ -237,9 +244,8 @@ export default function MediaLib() {
             </>
           )}
 
-          {/* --- IMAGE TAB --- */}
           {activeTab === "image" && (
-            <>
+            <> 
               {images.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   {images.map((item) => (
@@ -248,7 +254,7 @@ export default function MediaLib() {
                       className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden flex flex-col"
                     >
                       <img
-                        src={Img1}
+                        src={item.url}
                         alt={item.title}
                         className="object-cover w-full h-full"
                       />
@@ -268,7 +274,6 @@ export default function MediaLib() {
         </section>
       </div>
 
-      {/* --- VIDEO MODAL --- */}
       {openVideoUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
           <div className="relative w-full max-w-3xl mx-4 sm:mx-0">

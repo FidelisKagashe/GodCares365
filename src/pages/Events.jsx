@@ -1,34 +1,48 @@
-// src/pages/MatukioMaalumu.jsx
+// src/pages/Events.jsx
 
+import { useState, useEffect } from "react";
 import { CalendarDays, MapPin } from "lucide-react";
 
 export default function MatukioMaalumu() {
-  const events = [
-    {
-      title: "Siku ya maombi",
-      date: "2025-06-15",
-      location: "Kanisa Kuu, Dodoma",
-      image: "/images/maombi.jpg",
-      description:
-        "Jiunge nasi kwa siku ya maombi na mafunzo ya kiroho yatakayogusa maisha yako. Wageni kutoka sehemu mbalimbali watakuwepo.",
-    },
-    {
-      title: "Siku ya muziki",
-      date: "2025-07-10",
-      location: "Uwanja wa Taifa, Dar es Salaam",
-      image: "/images/sifa.jpg",
-      description:
-        "Siku ya kumwimbia Mungu kwa kisho na heshima. Kwamba mbalimbali na waimbaji binafsi watakuwepo.",
-    },
-    {
-      title: "Semina ya Vijana",
-      date: "2025-08-03",
-      location: "Arusha Convention Centre",
-      image: "/images/vijana.jpg",
-      description:
-        "Semina maalum kwa ajili ya vijana: mafundisho, michezo, ushauri nasaha, na uimbaji. Usikose nafasi hii ya kujifunza na kujenga mtazamo mpya.",
-    },
-  ];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 6;
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/events/");
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        setEvents(data);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchEvents();
+  }, []);
+
+  if (loading) return (
+    <main className="min-h-screen flex items-center justify-center">
+      <p className="text-gray-600">Inapakia matukio…</p>
+    </main>
+  );
+
+  if (error) return (
+    <main className="min-h-screen flex items-center justify-center">
+      <p className="text-red-600">Hitilafu: {error}</p>
+    </main>
+  );
+
+  // Pagination logic
+  const totalPages = Math.ceil(events.length / eventsPerPage);
+  const startIndex = (currentPage - 1) * eventsPerPage;
+  const currentEvents = events.slice(startIndex, startIndex + eventsPerPage);
 
   return (
     <main className="min-h-screen bg-gray-100 py-12 px-6">
@@ -37,31 +51,40 @@ export default function MatukioMaalumu() {
         <header className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-800">Matukio Maalum</h1>
           <p className="text-gray-600 mt-2">
-            Haya ndiyo matukio yanayokuja ndani ya huduma yetu – weka tarehe zako vizuri!
+            Angalia matukio yetu hapa chini – chukua taarifa sita tu kwa kila ukurasa.
           </p>
         </header>
 
         {/* Grid ya Matukio */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.map((event, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-md hover:shadow-lg overflow-hidden">
-              <img src={event.image} alt={event.title} className="h-48 w-full object-cover" />
+          {currentEvents.map(({ id, title, date, location, image, description }) => (
+            <div
+              key={id}
+              className="bg-white rounded-xl shadow-md hover:shadow-lg overflow-hidden"
+            >
+              <img
+                src={image}
+                alt={title}
+                className="h-48 w-full object-cover"
+              />
               <div className="p-6 space-y-3">
-                <h2 className="text-xl font-bold text-gray-800">{event.title}</h2>
+                <h2 className="text-xl font-bold text-gray-800">{title}</h2>
                 <div className="flex items-center text-gray-600 gap-2">
                   <CalendarDays size={18} />
-                  <span>{new Date(event.date).toLocaleDateString("sw-TZ", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                  })}</span>
+                  <span>
+                    {new Date(date).toLocaleDateString("sw-TZ", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
                 </div>
                 <div className="flex items-center text-gray-600 gap-2">
                   <MapPin size={18} />
-                  <span>{event.location}</span>
+                  <span>{location}</span>
                 </div>
-                <p className="text-gray-600">{event.description}</p>
+                <p className="text-gray-600">{description}</p>
                 <button className="mt-3 text-green-600 font-semibold hover:underline">
                   Jifunze zaidi →
                 </button>
@@ -69,6 +92,23 @@ export default function MatukioMaalumu() {
             </div>
           ))}
         </section>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-center mt-8 space-x-2">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-4 py-2 rounded-md ${
+                page === currentPage
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-green-100'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
       </div>
     </main>
   );
