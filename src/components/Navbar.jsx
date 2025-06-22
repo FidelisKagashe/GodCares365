@@ -19,13 +19,13 @@ import logo from '../assets/logo_transparent.png';
 
 // Menu items with corresponding icon components
 const items = [
-  { to: '/', label: 'Nyumbani', icon: HiHome },
-  { to: '/kuhusu-sisi', label: 'Kuhusu Sisi', icon: HiInformationCircle },
-  { to: '/habari', label: 'Habari & Vipengele', icon: HiNewspaper },
-  { to: '/mafunzo', label: 'Masomo ya Biblia', icon: HiBookOpen },
-  { to: '/media', label: 'Maktaba ya Media', icon: HiPhotograph },
-  { to: '/duka', label: 'Duka', icon: HiShoppingCart },
-  { to: '/matukio', label: 'Matukio Maalum', icon: HiCalendar },
+  { to: '/GodCares365', label: 'Nyumbani', icon: HiHome },
+  { to: '/GodCares365/kuhusu-sisi', label: 'Kuhusu Sisi', icon: HiInformationCircle },
+  { to: '/GodCares365/habari', label: 'Habari & Vipengele', icon: HiNewspaper },
+  { to: '/GodCares365/mafunzo', label: 'Masomo ya Biblia', icon: HiBookOpen },
+  { to: '/GodCares365/media', label: 'Maktaba ya Media', icon: HiPhotograph },
+  { to: '/GodCares365/duka', label: 'Duka', icon: HiShoppingCart },
+  { to: '/GodCares365/matukio', label: 'Matukio Maalum', icon: HiCalendar },
 ];
 
 export default function Navbar() {
