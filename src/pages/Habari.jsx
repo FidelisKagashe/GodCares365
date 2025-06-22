@@ -1,89 +1,368 @@
-// src/pages/HabariNaVipengele.jsx
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { HiArrowNarrowRight, HiShare } from 'react-icons/hi';
+import PropTypes from 'prop-types';
+import { formatDistanceToNow, parseISO, isValid } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
-import { HiNewspaper, HiPlay, HiBookOpen } from "react-icons/hi";
+// Sample data for frontend-only demo
+const sampleFeatured = {
+  title: 'Habari Kuu: Mfano wa Habari',
+  summary: 'Hii ni taarifa ya mfano ili kuonekana kwenye UI bila data halisi.',
+  imageUrl: '/images/sample-featured.jpg',
+  link: '/news/sample-habari-kuu',
+  timestamp: new Date().toISOString(),
+  category: 'Kimataifa',
+};
+const sampleSide = [
+  { title: 'Habari Ndogo 1: Mfano', link: '/news/sample-ndogo-1', timestamp: new Date().toISOString() },
+  { title: 'Habari Ndogo 2: Mfano', link: '/news/sample-ndogo-2', timestamp: new Date().toISOString() },
+  { title: 'Habari Ndogo 3: Mfano', link: '/news/sample-ndogo-3', timestamp: new Date().toISOString() },
+];
 
-export default function HabariNaVipengele() {
+// Utility: estimate read time from summary
+function estimateReadTime(text = '') {
+  const wordsPerMinute = 200;
+  const words = text.trim().split(/\s+/).length;
+  return Math.max(1, Math.ceil(words / wordsPerMinute));
+}
+
+const FeaturedArticle = React.memo(function FeaturedArticle({ article, fallbackImage, categoryLinkBase, locale, onArticleClick, enableShare, baseUrl }) {
+  const { title, summary, imageUrl, link, timestamp, category } = article;
+
+  const formatTimestamp = (ts) => {
+    if (!ts) return '';
+    let date;
+    try {
+      date = parseISO(ts);
+    } catch {
+      return ts;
+    }
+    if (date && isValid(date)) {
+      return formatDistanceToNow(date, { addSuffix: true, locale });
+    }
+    return ts;
+  };
+
+  const categoryUrl = category ? `${categoryLinkBase}/${category.toLowerCase()}` : '#';
+  const readTime = estimateReadTime(summary);
+  const fullLink = baseUrl && link.startsWith('/') ? `${baseUrl.replace(/\/$/, '')}${link}` : link;
+
   return (
-    <main className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-6 space-y-12">
-        {/* Kichwa Kikuu */}
-        <header className="text-center">
-          <HiNewspaper size={48} className="mx-auto text-green-600 mb-4" />
-          <h1 className="text-4xl font-bold text-gray-800">Habari na Vipengele</h1>
-          <p className="text-gray-600 mt-2">Habari mpya, vipindi vya kiroho, na makala maalum zinazogusa maisha ya kila siku.</p>
-        </header>
-
-        {/* Grid ya Habari / Vipengele */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Kipengele cha 1 */}
-          <article className="bg-white rounded-xl shadow-lg hover:shadow-xl transition overflow-hidden">
-            <img
-              src="/images/habari1.jpg"
-              alt="Habari ya Siku"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6 space-y-2">
-              <h2 className="text-xl font-semibold text-gray-800">Habari ya Siku</h2>
-              <p className="text-gray-600">Soma habari mpya zenye kuhamasisha, kuelimisha na kukuza imani yako katika maisha ya kila siku.</p>
-              <button className="text-green-600 font-semibold hover:underline">Soma zaidi →</button>
-            </div>
-          </article>
-
-          {/* Kipengele cha 2 */}
-          <article className="bg-white rounded-xl shadow-lg hover:shadow-xl transition overflow-hidden">
-            <img
-              src="/images/kipindi1.jpg"
-              alt="Vipindi vya Video"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6 space-y-2">
-              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                <HiPlay className="text-red-500" /> Vipindi vya Video
-              </h2>
-              <p className="text-gray-600">Tazama mafundisho ya Biblia kupitia vipindi vya video vya kiroho kutoka kwa watumishi mbalimbali.</p>
-              <button className="text-green-600 font-semibold hover:underline">Tazama sasa →</button>
-            </div>
-          </article>
-
-          {/* Kipengele cha 3 */}
-          <article className="bg-white rounded-xl shadow-lg hover:shadow-xl transition overflow-hidden">
-            <img
-              src="/images/makala1.jpg"
-              alt="Makala Maalum"
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6 space-y-2">
-              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                <HiBookOpen className="text-blue-500" /> Makala Maalum
-              </h2>
-              <p className="text-gray-600">Pata mafunzo ya kina juu ya maisha, ndoa, imani, na changamoto mbalimbali katika mwanga wa Biblia.</p>
-              <button className="text-green-600 font-semibold hover:underline">Soma makala →</button>
-            </div>
-          </article>
-        </section>
-
-        {/* CTA - Wito wa Kujiunga */}
-        <section className="text-center py-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Jiunge nasi kwa kila taarifa mpya!</h2>
-          <p className="text-gray-600 mb-6">Usikose habari za kiroho na vipengele vinavyokujenga – jiunge na orodha yetu ya barua pepe.</p>
-          <form className="max-w-md mx-auto flex items-center space-x-2">
-            <input
-              type="email"
-              placeholder="Weka barua pepe yako"
-              className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2 rounded-lg"
-            >
-              Jiunge
-            </button>
-          </form>
-        </section>
-        
+    <article className="flex-1 bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col">
+      <div className="relative">
+        <img
+          src={imageUrl || fallbackImage}
+          alt={title || 'Featured image'}
+          className="w-full h-64 object-cover"
+          loading="lazy"
+          onError={(e) => { e.target.src = fallbackImage; }}
+        />
+        {category && (
+          <Link
+            to={categoryUrl}
+            className="absolute top-4 left-4 bg-red-600 text-white text-xs uppercase px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-white"
+          >
+            {category}
+          </Link>
+        )}
       </div>
-      
-    </main>
+      <div className="p-6 flex flex-col justify-between flex-1">
+        <div>
+          <Link
+            to={link}
+            onClick={() => onArticleClick && onArticleClick(article)}
+            className="focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
+          >
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 hover:text-green-600 transition-colors">
+              {title}
+            </h2>
+          </Link>
+          {summary && <p className="text-gray-600 dark:text-gray-300 mt-4">{summary}</p>}
+        </div>
+        <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm text-gray-500 dark:text-gray-400 space-y-2 sm:space-y-0">
+          <span title={timestamp ? new Date(timestamp).toLocaleString() : undefined}>
+            {formatTimestamp(timestamp)}
+          </span>
+          {summary && <span className="text-gray-500 dark:text-gray-400">~{readTime} min kusoma</span>}
+          <div className="flex items-center space-x-4">
+            <Link
+              to={link}
+              className="flex items-center text-green-600 hover:underline focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
+              onClick={() => onArticleClick && onArticleClick(article)}
+            >
+              <span>Soma zaidi</span>
+              <HiArrowNarrowRight className="ml-1" aria-hidden="true" />
+            </Link>
+            {enableShare && fullLink && (
+              <a
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(fullLink)}&text=${encodeURIComponent(title)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Share on Twitter"
+                className="flex items-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
+              >
+                <HiShare className="w-5 h-5" aria-hidden="true" />
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+});
+FeaturedArticle.propTypes = {
+  article: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    summary: PropTypes.string,
+    imageUrl: PropTypes.string,
+    link: PropTypes.string.isRequired,
+    timestamp: PropTypes.string,
+    category: PropTypes.string,
+  }).isRequired,
+  fallbackImage: PropTypes.string.isRequired,
+  categoryLinkBase: PropTypes.string.isRequired,
+  locale: PropTypes.object,
+  onArticleClick: PropTypes.func,
+  enableShare: PropTypes.bool,
+  baseUrl: PropTypes.string,
+};
+FeaturedArticle.defaultProps = {
+  locale: enUS,
+  onArticleClick: null,
+  enableShare: false,
+  baseUrl: '',
+};
+
+const SideArticleItem = React.memo(function SideArticleItem({ item, locale, onArticleClick }) {
+  const { title, link, timestamp } = item;
+  const formatTimestamp = (ts) => {
+    if (!ts) return '';
+    let date;
+    try {
+      date = parseISO(ts);
+    } catch {
+      return ts;
+    }
+    if (date && isValid(date)) {
+      return formatDistanceToNow(date, { addSuffix: true, locale });
+    }
+    return ts;
+  };
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 flex flex-col">
+      <Link
+        to={link}
+        aria-label={title}
+        onClick={() => onArticleClick && onArticleClick(item)}
+        className="focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
+      >
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 hover:text-green-600 transition-colors">
+          {title}
+        </h3>
+      </Link>
+      <div className="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-between">
+        <span title={timestamp ? new Date(timestamp).toLocaleString() : undefined}>
+          {formatTimestamp(timestamp)}
+        </span>
+        <Link
+          to={link}
+          className="text-green-600 hover:underline focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
+          aria-label="Soma makala"
+          onClick={() => onArticleClick && onArticleClick(item)}
+        >
+          &rarr;
+        </Link>
+      </div>
+    </div>
+  );
+});
+SideArticleItem.propTypes = {
+  item: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    link: PropTypes.string.isRequired,
+    timestamp: PropTypes.string,
+  }).isRequired,
+  locale: PropTypes.object,
+  onArticleClick: PropTypes.func,
+};
+SideArticleItem.defaultProps = {
+  locale: enUS,
+  onArticleClick: null,
+};
+
+function SideArticleList({ list, category, categoryLinkBase, locale, onArticleClick, maxItems }) {
+  if (!list || list.length === 0) {
+    return <p className="text-gray-500 dark:text-gray-400">Hakuna makala za upande.</p>;
+  }
+  const itemsToShow = maxItems ? list.slice(0, maxItems) : list;
+  return (
+    <>
+      <ul className="space-y-4">
+        {itemsToShow.map((item, idx) => (
+          <li key={item.link || idx}>
+            <SideArticleItem item={item} locale={locale} onArticleClick={onArticleClick} />
+          </li>
+        ))}
+      </ul>
+      {category && (
+        <div className="mt-6 text-right">
+          <Link
+            to={`${categoryLinkBase}/${category.toLowerCase()}`}
+            className="text-green-600 hover:underline font-semibold flex items-center justify-end focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
+          >
+            <span>ALL {category.toUpperCase()}</span>
+            <HiArrowNarrowRight className="ml-1" aria-hidden="true" />
+          </Link>
+        </div>
+      )}
+    </>
   );
 }
+SideArticleList.propTypes = {
+  list: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      link: PropTypes.string.isRequired,
+      timestamp: PropTypes.string,
+    })
+  ),
+  category: PropTypes.string,
+  categoryLinkBase: PropTypes.string.isRequired,
+  locale: PropTypes.object,
+  onArticleClick: PropTypes.func,
+  maxItems: PropTypes.number,
+};
+SideArticleList.defaultProps = {
+  locale: enUS,
+  onArticleClick: null,
+  maxItems: null,
+};
+
+function FeaturedSkeleton() {
+  return (
+    <div className="animate-pulse flex flex-col lg:flex-row gap-8">
+      <div className="flex-1 space-y-4">
+        <div className="bg-gray-200 dark:bg-gray-700 h-64 rounded-xl" />
+        <div className="space-y-2">
+          <div className="bg-gray-200 dark:bg-gray-700 h-6 w-3/4 rounded" />
+          <div className="bg-gray-200 dark:bg-gray-700 h-4 w-full rounded" />
+          <div className="bg-gray-200 dark:bg-gray-700 h-4 w-5/6 rounded" />
+        </div>
+      </div>
+      <aside className="w-full lg:w-1/3 flex-shrink-0 space-y-4">
+        {[...Array(3)].map((_, idx) => (
+          <div key={idx} className="bg-gray-200 dark:bg-gray-700 h-24 rounded-xl" />
+        ))}
+      </aside>
+    </div>
+  );
+}
+
+export default function FeaturedNewsSection({
+  headerTitle = 'Habari & Vipengele',
+  initialFeatured,
+  initialSide,
+  categoryLinkBase,
+  fallbackImage,
+  locale,
+  onArticleClick,
+  enableShare,
+  baseUrl,
+  sideMaxItems,
+}) {
+  const feat = initialFeatured || sampleFeatured;
+  const sideList = (initialSide && initialSide.length) ? initialSide : sampleSide;
+
+  return (
+    <section
+      id="featured-news-section"
+      aria-labelledby="featured-section-heading"
+      className="container mx-auto px-6 py-12"
+    >
+      <header className="mb-8 text-center">
+        <h1
+          id="featured-section-heading"
+          className="text-4xl sm:text-5xl font-extrabold text-green-800 dark:text-green-800"
+        >
+          {headerTitle}
+        </h1>
+        <p className="mt-2 text-black dark:text-black">
+          Habari na vipengele vya mfano bila backend.
+        </p>
+      </header>
+
+      {feat ? (
+        <div className="flex flex-col lg:flex-row gap-8">
+          <FeaturedArticle
+            article={feat}
+            fallbackImage={fallbackImage}
+            categoryLinkBase={categoryLinkBase}
+            locale={locale}
+            onArticleClick={onArticleClick}
+            enableShare={enableShare}
+            baseUrl={baseUrl}
+          />
+          <aside className="w-full lg:w-1/3 flex-shrink-0">
+            <SideArticleList
+              list={sideList}
+              category={feat.category}
+              categoryLinkBase={categoryLinkBase}
+              locale={locale}
+              onArticleClick={onArticleClick}
+              maxItems={sideMaxItems}
+            />
+          </aside>
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Hakuna habari zilizopatikana.
+        </p>
+      )}
+    </section>
+  );
+}
+
+FeaturedNewsSection.propTypes = {
+  headerTitle: PropTypes.string,
+  initialFeatured: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    summary: PropTypes.string,
+    imageUrl: PropTypes.string,
+    link: PropTypes.string.isRequired,
+    timestamp: PropTypes.string,
+    category: PropTypes.string,
+  }),
+  initialSide: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      link: PropTypes.string.isRequired,
+      timestamp: PropTypes.string,
+    })
+  ),
+  categoryLinkBase: PropTypes.string,
+  fallbackImage: PropTypes.string,
+  locale: PropTypes.object,
+  onArticleClick: PropTypes.func,
+  enableShare: PropTypes.bool,
+  baseUrl: PropTypes.string,
+  sideMaxItems: PropTypes.number,
+};
+FeaturedNewsSection.defaultProps = {
+  initialFeatured: null,
+  initialSide: [],
+  categoryLinkBase: '/category',
+  fallbackImage: '/images/fallback.jpg',
+  locale: enUS,
+  onArticleClick: null,
+  enableShare: false,
+  baseUrl: '',
+  sideMaxItems: 3,
+};
+
+// Example usage in a page:
+// import FeaturedNewsSection from './FeaturedNewsSection';
+// function DemoPage() {
+//   return <FeaturedNewsSection />;
+// }
