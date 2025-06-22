@@ -48,12 +48,12 @@ export default function OurMission() {
             </div>
 
             {/* Main heading */}
-            <h2 id="our-mission-heading" className="text-3xl md:text-4xl font-bold text-green-800 mb-4">
+            <h2 id="our-mission-heading" className="text-3xl text-left md:text-4xl font-bold text-green-800 mb-4">
               Karibu katika umoja Wetu
             </h2>
 
             {/* Paragraph */}
-            <p className="text-gray-700 mb-6 text-base md:text-lg">
+            <p className="text-gray-700 mb-6 text-justify text-base md:text-lg">
               Tovuti hii imeundwa kukuimarisha katika imani, kukuunga mkono katika maombi, na kukupeleka karibu na Mungu. Tunaamini kwamba kila siku ni fursa mpya ya kusogea kwake Mungu wetu.
             </p>
 

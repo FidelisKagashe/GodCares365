@@ -13,13 +13,13 @@ function App() {
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/kuhusu-sisi" element={<Kuhusu />} />
-        <Route path="/habari" element={<Habari />} />
-        <Route path="/mafunzo" element={<Mafunzo />} />
-        <Route path="/media" element={<MediaLib />} />
-        <Route path="/duka" element={<Shop />} />
-        <Route path="/matukio" element={<Events />} />
+        <Route path="/GodCares365" element={<Home />} />
+        <Route path="/GodCares365/kuhusu-sisi" element={<Kuhusu />} />
+        <Route path="/GodCares365/habari" element={<Habari />} />
+        <Route path="/GodCares365/mafunzo" element={<Mafunzo />} />
+        <Route path="/GodCares365/media" element={<MediaLib />} />
+        <Route path="/GodCares365/duka" element={<Shop />} />
+        <Route path="/GodCares365/matukio" element={<Events />} />
       </Routes>
     </BrowserRouter>
   );

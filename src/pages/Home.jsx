@@ -1,5 +1,6 @@
 // src/pages/Home.jsx
 import Carousel from './Home/Carousel';
+import Quote from './Home/Quote';
 import OurMission from './Home/OurMission';
 import ChaguaKituo from './Home/ChaguaKituo';
 import caucasian from '../assets/caucasian_group.jpg';
@@ -43,49 +44,12 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50">
       {/* Carousel Section */}
       <Carousel slides={slides} interval={5000} />
-
-      <section className="relative overflow-hidden bg-gradient-to-r from-green-50 to-white py-16">
-        {/* Mfano wa pattern ya SVG nyepesi nyuma */}
-        <div className="absolute inset-0 pointer-events-none">
-          <svg
-            className="w-full h-full"
-            preserveAspectRatio="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <defs>
-              <pattern
-                id="dotPattern"
-                x="0"
-                y="0"
-                width="20"
-                height="20"
-                patternUnits="userSpaceOnUse"
-              >
-                <circle cx="1" cy="1" r="1" fill="rgba(34,197,94,0.2)" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#dotPattern)" />
-          </svg>
-        </div>
-
-        <div className="relative container mx-auto px-6">
-          {/* Kadi ya glassmorphism */}
-          <div className="mx-auto bg-white bg-opacity-60 backdrop-blur-md rounded-3xl shadow-md p-6 md:p-8 text-center">
-            {/* Maandiko ya fungu */}
-            <blockquote className="text-xl md:text-xl text-gray-800 leading-snug">
-              "Hili ndilo pendo, si kwamba sisi tulimpenda Mungu, bali kwamba yeye alitupenda sisi, akamtuma Mwanawe kuwa kipatanisho kwa dhambi zetu"
-            </blockquote>
-
-            {/* Rejea */}
-            <cite className="mt-6 block text-gray-700 font-medium text-lg">
-              – 1 Yohana 4:10
-            </cite>
-          </div>
-        </div>
-      </section>
-
+      
       {/* Our Mission */}
       <OurMission />
+
+      {/*Quote */}
+      <Quote />
 
       {/* Quick Links Grid */}
       <ChaguaKituo />
