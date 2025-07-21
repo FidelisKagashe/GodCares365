@@ -1,6 +1,9 @@
 // src/pages/Events.jsx
 
 import { useState, useEffect } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
+import { useTheme } from "../contexts/ThemeContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { CalendarDays, MapPin } from "lucide-react";
 
 export default function MatukioMaalumu() {
@@ -9,6 +12,8 @@ export default function MatukioMaalumu() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 6;
+  const { t } = useLanguage();
+  const { isDark } = useTheme();
 
   useEffect(() => {
     async function fetchEvents() {
@@ -28,14 +33,18 @@ export default function MatukioMaalumu() {
   }, []);
 
   if (loading) return (
-    <main className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-600">Inapakia matukio…</p>
+    <main className={`min-h-screen flex items-center justify-center transition-colors ${
+      isDark ? 'bg-gray-900' : 'bg-gray-100'
+    }`}>
+      <LoadingSpinner text={t('loading')} />
     </main>
   );
 
   if (error) return (
-    <main className="min-h-screen flex items-center justify-center">
-      <p className="text-red-600">Hitilafu: {error}</p>
+    <main className={`min-h-screen flex items-center justify-center transition-colors ${
+      isDark ? 'bg-gray-900' : 'bg-gray-100'
+    }`}>
+      <p className="text-red-600">{t('error')}: {error}</p>
     </main>
   );
 
@@ -45,13 +54,19 @@ export default function MatukioMaalumu() {
   const currentEvents = events.slice(startIndex, startIndex + eventsPerPage);
 
   return (
-    <main className="min-h-screen bg-gray-100 py-12 px-6">
+    <main className={`min-h-screen py-12 px-6 transition-colors ${
+      isDark ? 'bg-gray-900' : 'bg-gray-100'
+    }`}>
       <div className="max-w-6xl mx-auto">
         {/* Kichwa Kikuu */}
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800">Matukio Maalum</h1>
-          <p className="text-gray-600 mt-2">
-            Angalia matukio yetu hapa chini – chukua taarifa sita tu kwa kila ukurasa.
+          <h1 className={`text-4xl font-bold transition-colors ${
+            isDark ? 'text-white' : 'text-gray-800'
+          }`}>{t('eventsTitle')}</h1>
+          <p className={`mt-2 transition-colors ${
+            isDark ? 'text-gray-300' : 'text-gray-600'
+          }`}>
+            {t('eventsDesc')}
           </p>
         </header>
 
@@ -60,7 +75,9 @@ export default function MatukioMaalumu() {
           {currentEvents.map(({ id, title, date, location, image, description }) => (
             <div
               key={id}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg overflow-hidden"
+              className={`rounded-xl shadow-md hover:shadow-lg overflow-hidden transition-all ${
+                isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+              }`}
             >
               <img
                 src={image}
@@ -68,8 +85,12 @@ export default function MatukioMaalumu() {
                 className="h-48 w-full object-cover"
               />
               <div className="p-6 space-y-3">
-                <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-                <div className="flex items-center text-gray-600 gap-2">
+                <h2 className={`text-xl font-bold transition-colors ${
+                  isDark ? 'text-white' : 'text-gray-800'
+                }`}>{title}</h2>
+                <div className={`flex items-center gap-2 transition-colors ${
+                  isDark ? 'text-gray-300' : 'text-gray-600'
+                }`}>
                   <CalendarDays size={18} />
                   <span>
                     {new Date(date).toLocaleDateString("sw-TZ", {
@@ -80,11 +101,13 @@ export default function MatukioMaalumu() {
                     })}
                   </span>
                 </div>
-                <div className="flex items-center text-gray-600 gap-2">
+                <div className={`flex items-center gap-2 transition-colors ${
+                  isDark ? 'text-gray-300' : 'text-gray-600'
+                }`}>
                   <MapPin size={18} />
                   <span>{location}</span>
                 </div>
-                <p className="text-gray-600">{description}</p>
+                <p className={`transition-colors ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>{description}</p>
                 <button className="mt-3 text-green-600 font-semibold hover:underline">
                   Jifunze zaidi →
                 </button>
@@ -99,10 +122,12 @@ export default function MatukioMaalumu() {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-4 py-2 rounded-md ${
+              className={`px-4 py-2 rounded-md transition-colors ${
                 page === currentPage
                   ? 'bg-green-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-green-100'
+                  : isDark 
+                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                    : 'bg-white text-gray-700 hover:bg-green-100'
               }`}
             >
               {page}

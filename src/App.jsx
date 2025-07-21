@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+import PageLoader from './components/PageLoader';
 import Navbar from './components/Navbar';
 import Habari from './pages/Habari';
 import Home from './pages/Home';
@@ -10,18 +13,26 @@ import Events from './pages/Events';
 
 function App() {
   return (
-    <BrowserRouter basename='/GodCares365/'>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/kuhusu-sisi" element={<Kuhusu />} />
-        <Route path="/habari" element={<Habari />} />
-        <Route path="/mafunzo" element={<Mafunzo />} />
-        <Route path="/media" element={<MediaLib />} />
-        <Route path="/duka" element={<Shop />} />
-        <Route path="/matukio" element={<Events />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider>
+      <LanguageProvider>
+        <BrowserRouter basename='/GodCares365/'>
+          <PageLoader>
+            <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/kuhusu-sisi" element={<Kuhusu />} />
+                <Route path="/habari" element={<Habari />} />
+                <Route path="/mafunzo" element={<Mafunzo />} />
+                <Route path="/media" element={<MediaLib />} />
+                <Route path="/duka" element={<Shop />} />
+                <Route path="/matukio" element={<Events />} />
+              </Routes>
+            </div>
+          </PageLoader>
+        </BrowserRouter>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

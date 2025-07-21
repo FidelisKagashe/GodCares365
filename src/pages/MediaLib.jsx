@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { useLanguage } from "../contexts/LanguageContext";
+import { useTheme } from "../contexts/ThemeContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 import {
   HiDocumentText,
   HiPhotograph,
@@ -11,10 +14,14 @@ export default function MediaLib() {
   const [mediaItems, setMediaItems] = useState([]);
   const [activeTab, setActiveTab] = useState("video");
   const [openVideoUrl, setOpenVideoUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
+  const { isDark } = useTheme();
 
   useEffect(() => {
     const fetchMedia = async () => {
       try {
+        setLoading(true);
         // Fetch API root
         const rootRes = await fetch("https://godcares365.pythonanywhere.com/");
         const root = await rootRes.json();
@@ -73,6 +80,8 @@ export default function MediaLib() {
         ]);
       } catch (error) {
         console.error("Error fetching media items:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMedia();
@@ -83,47 +92,69 @@ export default function MediaLib() {
   const documents = mediaItems.filter((item) => item.type === "pdf");
   const images = mediaItems.filter((item) => item.type === "image");
 
+  if (loading) {
+    return (
+      <main className={`min-h-screen flex items-center justify-center transition-colors ${
+        isDark ? 'bg-gray-900' : 'bg-gray-50'
+      }`}>
+        <LoadingSpinner text={t('loading')} />
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-gray-50 py-12">
+    <main className={`min-h-screen py-12 transition-colors ${
+      isDark ? 'bg-gray-900' : 'bg-gray-50'
+    }`}>
       <div className="container mx-auto px-6 space-y-8">
         <header className="text-center">
-          <h1 className="text-4xl font-bold text-gray-800">
-            Maktaba Ya Media
+          <h1 className={`text-4xl font-bold transition-colors ${
+            isDark ? 'text-white' : 'text-gray-800'
+          }`}>
+            {t('mediaLibTitle')}
           </h1>
-          <p className="text-gray-600 mt-2">
-            Chaguzi za Video, Audio, Picha na Nyaraka mbalimbali.
+          <p className={`mt-2 transition-colors ${
+            isDark ? 'text-gray-300' : 'text-gray-600'
+          }`}>
+            {t('mediaLibDesc')}
           </p>
         </header>
 
         <nav className="flex justify-center space-x-4 border-b pb-2">
           <button
             onClick={() => setActiveTab("video")}
-            className={`flex items-center space-x-2 ${
+            className={`flex items-center space-x-2 transition-colors ${
               activeTab === "video"
                 ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-600 hover:text-blue-600"
+                : isDark 
+                  ? "text-gray-400 hover:text-blue-400" 
+                  : "text-gray-600 hover:text-blue-600"
             }`}
           >
             <HiVideoCamera className="w-6 h-6" />
-            <span>Video</span>
+            <span>{t('video')}</span>
           </button>
           <button
             onClick={() => setActiveTab("audio")}
-            className={`flex items-center space-x-2 ${
+            className={`flex items-center space-x-2 transition-colors ${
               activeTab === "audio"
                 ? "border-b-2 border-green-600 text-green-600"
-                : "text-gray-600 hover:text-green-600"
+                : isDark 
+                  ? "text-gray-400 hover:text-green-400" 
+                  : "text-gray-600 hover:text-green-600"
             }`}
           >
             <HiMusicNote className="w-6 h-6" />
-            <span>Audio</span>
+            <span>{t('audio')}</span>
           </button>
           <button
             onClick={() => setActiveTab("pdf")}
-            className={`flex items-center space-x-2 ${
+            className={`flex items-center space-x-2 transition-colors ${
               activeTab === "pdf"
                 ? "border-b-2 border-red-600 text-red-600"
-                : "text-gray-600 hover:text-red-600"
+                : isDark 
+                  ? "text-gray-400 hover:text-red-400" 
+                  : "text-gray-600 hover:text-red-600"
             }`}
           >
             <HiDocumentText className="w-6 h-6" />
@@ -131,14 +162,16 @@ export default function MediaLib() {
           </button>
           <button
             onClick={() => setActiveTab("image")}
-            className={`flex items-center space-x-2 ${
+            className={`flex items-center space-x-2 transition-colors ${
               activeTab === "image"
                 ? "border-b-2 border-yellow-600 text-yellow-600"
-                : "text-gray-600 hover:text-yellow-600"
+                : isDark 
+                  ? "text-gray-400 hover:text-yellow-400" 
+                  : "text-gray-600 hover:text-yellow-600"
             }`}
           >
             <HiPhotograph className="w-6 h-6" />
-            <span>Picha</span>
+            <span>{t('images')}</span>
           </button>
         </nav>
 
@@ -150,7 +183,9 @@ export default function MediaLib() {
                   {videos.map((item) => (
                     <article
                       key={item.id}
-                      className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden flex flex-col"
+                      className={`rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden flex flex-col ${
+                        isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+                      }`}
                     >
                       <div
                         className="relative w-full h-48 bg-black cursor-pointer"
@@ -168,10 +203,14 @@ export default function MediaLib() {
                         </div>
                       </div>
                       <div className="p-4 flex-grow">
-                        <h3 className="text-lg font-semibold text-gray-800 truncate">
+                        <h3 className={`text-lg font-semibold truncate transition-colors ${
+                          isDark ? 'text-white' : 'text-gray-800'
+                        }`}>
                           {item.title}
                         </h3>
-                        <p className="text-gray-500 text-sm mt-1">
+                        <p className={`text-sm mt-1 transition-colors ${
+                          isDark ? 'text-gray-400' : 'text-gray-500'
+                        }`}>
                           Tazama vizuri
                         </p>
                       </div>
@@ -179,7 +218,9 @@ export default function MediaLib() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">Hakuna video zilizopakiwa.</p>
+                <p className={`transition-colors ${
+                  isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}>Hakuna video zilizopakiwa.</p>
               )}
             </>
           )}
@@ -191,10 +232,14 @@ export default function MediaLib() {
                   {audios.map((item) => (
                     <article
                       key={item.id}
-                      className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden flex flex-col items-center p-6"
+                      className={`rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden flex flex-col items-center p-6 ${
+                        isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+                      }`}
                     >
                       <HiMusicNote size={48} className="text-green-600 mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-800 mb-2 text-center truncate">
+                      <h3 className={`text-lg font-semibold mb-2 text-center truncate transition-colors ${
+                        isDark ? 'text-white' : 'text-gray-800'
+                      }`}>
                         {item.title}
                       </h3>
                       <audio src={item.url} controls className="w-full" />
@@ -202,7 +247,9 @@ export default function MediaLib() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">Hakuna audio zilizopakiwa.</p>
+                <p className={`transition-colors ${
+                  isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}>Hakuna audio zilizopakiwa.</p>
               )}
             </>
           )}
@@ -214,11 +261,15 @@ export default function MediaLib() {
                   {documents.map((item) => (
                     <article
                       key={item.id}
-                      className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden flex flex-col p-4"
+                      className={`rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden flex flex-col p-4 ${
+                        isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+                      }`}
                     >
                       <div className="flex items-center space-x-2 mb-3">
                         <HiDocumentText size={36} className="text-red-600" />
-                        <h3 className="text-lg font-semibold text-gray-800 truncate">
+                        <h3 className={`text-lg font-semibold truncate transition-colors ${
+                          isDark ? 'text-white' : 'text-gray-800'
+                        }`}>
                           {item.title}
                         </h3>
                       </div>
@@ -239,7 +290,9 @@ export default function MediaLib() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">Hakuna nyaraka zilizopakiwa.</p>
+                <p className={`transition-colors ${
+                  isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}>Hakuna nyaraka zilizopakiwa.</p>
               )}
             </>
           )}
@@ -251,7 +304,9 @@ export default function MediaLib() {
                   {images.map((item) => (
                     <article
                       key={item.id}
-                      className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition overflow-hidden flex flex-col"
+                      className={`rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden flex flex-col ${
+                        isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+                      }`}
                     >
                       <img
                         src={item.url}
@@ -259,7 +314,9 @@ export default function MediaLib() {
                         className="object-cover w-full h-full"
                       />
                       <div className="p-4">
-                        <h3 className="text-lg font-semibold text-gray-800 truncate">
+                        <h3 className={`text-lg font-semibold truncate transition-colors ${
+                          isDark ? 'text-white' : 'text-gray-800'
+                        }`}>
                           {item.title}
                         </h3>
                       </div>
@@ -267,7 +324,9 @@ export default function MediaLib() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">Hakuna picha zilizopakiwa.</p>
+                <p className={`transition-colors ${
+                  isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}>Hakuna picha zilizopakiwa.</p>
               )}
             </>
           )}
